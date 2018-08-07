@@ -62,15 +62,15 @@ const FoodEntry = () => {
         <Carousel
           autoplay={false}
           infinite
-          beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
-          afterChange={index => console.log('slide to', index)}
+          // beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
+          // afterChange={index => console.log('slide to', index)}
         >
           {chunk_data.map((vals, idx) => (
             <ul key={idx} className={styles.food_con}>
               {vals.map((v, vidx) => (
                 <li key={vidx} className={styles.food_item}>
                   <a href={v.link}>
-                    <img src={v.src}/>
+                    <img src={v.src} alt=""/>
                     <span>{v.word}</span>
                   </a>
                 </li>
