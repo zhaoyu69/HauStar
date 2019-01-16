@@ -1,0 +1,20 @@
+@font-face {
+  font-family: '8pinmatrix';
+  src: url('./8pinmatrix.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'blingling';
+  src: url('./blingling.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'pop';
+  src: url('./pop.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
