@@ -2,9 +2,9 @@
   <div class="home">
     <!--dklist-->
     <flexbox :gutter="0">
-      <flexbox-item v-for="type in types" :key="type.id" :span="1/3" class="item">
+      <flexbox-item v-for="type in Types" :key="type.id" :span="1/3" class="item">
         <div class="item-img-wrap" v-on:click="dk(type)" v-bind:class="{active:type.isActive}">
-          <img :src="type.src" alt="">
+          <img :src="type.isActive ? type.activeSrc : type.src" alt="">
         </div>
         <p class="item-label">{{ type.label }}</p>
       </flexbox-item>
@@ -17,7 +17,7 @@
         <div class="log-content">
           <p class="log-time">{{ nowTime }}</p>
           <div style="margin-top: 10px">
-            <img :src="showItem.src" alt="" style="width: 32px;height: 32px;">
+            <img :src="showItem.src" alt="" style="width: 50px;height: 50px;">
             <p style="font-size: 12px;">{{ showItem.label }}</p>
           </div>
           <x-textarea :max="200" :placeholder="'写点什么吧...'" class="log-text" @on-change="logTextChange"></x-textarea>
@@ -33,7 +33,7 @@
 
 <script>
   import {Flexbox, FlexboxItem, XTextarea, XDialog, XButton} from 'vux';
-  import demoSrc from "@/assets/sun.png";
+  import typesService from "../services/types";
   export default {
     components: {
       Flexbox,
@@ -42,9 +42,24 @@
       XDialog,
       XButton,
     },
+    data() {
+      return {
+        show: false,
+        showItem: {},
+        nowTime: this.$moment().format('YYYY/MM/DD HH:mm:ss'),
+        Types: [],
+        logText: ""
+      }
+    },
+    mounted() {
+      typesService.getTypes()
+        .then(Types => this.Types = Types);
+    },
     methods: {
       dk: function(type) {
-        type.isActive = !type.isActive;
+        const index = this.Types.findIndex(dkType => dkType.id === type.id);
+        this.Types[index].isActive = !type.isActive;
+        typesService.setTypes(this.Types);
         this.show = type.isActive;
         this.showItem = type;
         this.nowTime = this.$moment().format('YYYY/MM/DD HH:mm:ss');
@@ -58,27 +73,6 @@
       },
       logTextChange: function(value) {
         this.logText = value || "";
-      }
-    },
-    data() {
-      return {
-        show: false,
-        showItem: {},
-        nowTime: this.$moment().format('YYYY/MM/DD HH:mm:ss'),
-        types: [{
-          src: demoSrc,
-          label: "1",
-          isActive: true,
-        }, {
-          src: demoSrc,
-          label: "2",
-          isActive: false,
-        }, {
-          src: demoSrc,
-          label: "3",
-          isActive: false,
-        }],
-        logText: ""
       }
     }
   }
@@ -95,26 +89,20 @@
   }
   .item {
     text-align: center;
-    .item-img-wrap {
+    img {
       width: 50px;
       height: 50px;
       border-radius: 50%;
       margin: 0 auto;
+      border: 1px solid #f1f1f1;
       line-height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #f1f1f1;
-      &.active {
-        background: #fff493;
-      }
-      img {
-        width: 32px;
-        height: 32px;
-      }
     }
     .item-label {
       margin-top: 3px;
+      font-size: 12px;
     }
   }
   .log {

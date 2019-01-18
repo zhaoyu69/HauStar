@@ -6,17 +6,16 @@
       :drawer-style="{'background-color':'#35495e', width: '200px'}">
       <!-- drawer menu -->
       <ul slot="drawer" class="drawer-content">
-        <div class="avatar">
-          <img src="@/assets/avatar.jpg" alt="">
-          <p>用户</p>
-        </div>
+        <h1 class="logo">
+          <img src="@/assets/logo.png" alt="">
+        </h1>
         <group class="drawer-content-list">
           <cell title="关于" link="/about" value="" @click.native="drawerVisibility = false"></cell>
           <cell title="Github" link="https://github.com/zhaoyu69/HauStar" value="" @click.native="drawerVisibility = false"></cell>
         </group>
       </ul>
       <!-- main content -->
-      <view-box ref="viewBox" body-padding-top="46px" body-padding-bottom="55px">
+      <view-box ref="viewBox" body-padding-top="46px" body-padding-bottom="53px">
         <x-header
           slot="header"
           :title="title"
@@ -98,15 +97,12 @@
 </style>
 
 <style scoped lang="less">
-  .avatar {
+  .logo {
     text-align: center;
-    padding: 10px;
-    color: #fff;
+    padding: 20px;
+    padding-bottom: 0;
     img {
-      width: 80px;
-      height: 80px;
-      box-shadow: 0 1px 6px #ccc;
-      border-radius: 50%;
+      width: 100%;
       display: inline-block;
     }
   }
