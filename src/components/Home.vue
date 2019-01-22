@@ -2,9 +2,9 @@
   <div class="home">
     <!--dklist-->
     <flexbox :gutter="0">
-      <flexbox-item v-for="type in Types" :key="type.id" :span="1/3" class="item">
-        <div class="item-img-wrap" v-on:click="dk(type)" v-bind:class="{active:type.isActive}">
-          <img :src="type.isActive ? type.activeSrc : type.src" alt="">
+      <flexbox-item v-for="(type, index) in types" :key="type.id" :span="1/3" class="item">
+        <div class="item-img-wrap" v-on:click="dk(type, records[index])" v-bind:class="{active: (records[index] && records[index].active)}">
+          <img :src="(records[index] && records[index].active) ? type.activeSrc : type.src" alt="">
         </div>
         <p class="item-label">{{ type.label }}</p>
       </flexbox-item>
@@ -17,8 +17,8 @@
         <div class="log-content">
           <p class="log-time">{{ nowTime }}</p>
           <div style="margin-top: 10px">
-            <img :src="showItem.src" alt="" style="width: 50px;height: 50px;">
-            <p style="font-size: 12px;">{{ showItem.label }}</p>
+            <img :src="types[activeIndex] && types[activeIndex].src" alt="" style="width: 50px;height: 50px;">
+            <p style="font-size: 12px;">{{ types[activeIndex] && types[activeIndex].label }}</p>
           </div>
           <x-textarea :max="200" :placeholder="'写点什么吧...'" class="log-text" @on-change="logTextChange"></x-textarea>
         </div>
@@ -34,6 +34,7 @@
 <script>
   import {Flexbox, FlexboxItem, XTextarea, XDialog, XButton} from 'vux';
   import typesService from "../services/types";
+  import recordsService from "../services/records";
   export default {
     components: {
       Flexbox,
@@ -45,27 +46,34 @@
     data() {
       return {
         show: false,
-        showItem: {},
+        activeIndex: -1,
         nowTime: this.$moment().format('YYYY/MM/DD HH:mm:ss'),
-        Types: [],
+        types: [],
+        records: [],
         logText: ""
       }
     },
     mounted() {
       typesService.getTypes()
-        .then(Types => this.Types = Types);
+        .then(Types => this.types = Types);
+      recordsService.getRecords()
+        .then(records => this.records = records);
     },
     methods: {
-      dk: function(type) {
-        const index = this.Types.findIndex(dkType => dkType.id === type.id);
-        this.Types[index].isActive = !type.isActive;
-        typesService.setTypes(this.Types);
-        this.show = type.isActive;
-        this.showItem = type;
+      dk: function(type, record) {
+        this.activeIndex = this.types.findIndex(_type => _type.id === type.id);
         this.nowTime = this.$moment().format('YYYY/MM/DD HH:mm:ss');
+        const newRecord = {
+          active: record && !record.active,
+          time: this.$moment(),
+          log: this.logText
+        };
+        this.records[this.activeIndex] = newRecord;
+        this.show = newRecord.active;
       },
       saveLog: function() {
-        alert(this.logText);
+        this.records[this.activeIndex].log = this.logText;
+        recordsService.addRecords(this.records);
         this.show = false;
       },
       closeLog: function() {

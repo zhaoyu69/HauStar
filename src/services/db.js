@@ -1,10 +1,14 @@
 import { openDb } from "idb";
 
-const dbPromise = openDb('keyval-store', 1, upgradeDB => {
-  upgradeDB.createObjectStore('keyval');
+const dbPromise = openDb('store', 1, upgradeDB => {
+  switch (upgradeDB.oldVersion) {
+    case 0:
+      upgradeDB.createObjectStore('keyval');
+      upgradeDB.createObjectStore('records', {keyPath: 'id'});
+  }
 });
 
-const idbKeyval = {
+const idbStore = {
   async get(key) {
     const db = await dbPromise;
     return db.transaction('keyval').objectStore('keyval').get(key);
@@ -31,6 +35,21 @@ const idbKeyval = {
     const db = await dbPromise;
     return db.transaction('keyval').objectStore('keyval').getAllKeys(key);
   },
+
+  async add(store, obj) {
+    const db = await dbPromise;
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(obj);
+    return tx.complete;
+  },
+  async getAll(store) {
+    const db = await dbPromise;
+    return db.transaction(store).objectStore(store).getAll();
+  },
+  async getById(store, id) {
+    const db = await dbPromise;
+    return db.transaction(store).objectStore(store).get(id);
+  }
 };
 
-export default idbKeyval;
+export default idbStore;
